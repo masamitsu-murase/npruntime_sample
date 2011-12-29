@@ -449,7 +449,10 @@ ScriptablePluginObject::Invoke(NPIdentifier name, const NPVariant *args,
 
     NPN_ReleaseVariantValue(&docv);
 
-    STRINGZ_TO_NPVARIANT(_strdup("foo return val"), *result);
+    const NPUTF8 *ret_str = "foo return val";
+    NPUTF8 *s = (NPUTF8 *)NPN_MemAlloc(strlen(ret_str) + 1);
+    strcpy(s, ret_str);
+    STRINGZ_TO_NPVARIANT(s, *result);
 
     return true;
   }
@@ -463,7 +466,10 @@ ScriptablePluginObject::InvokeDefault(const NPVariant *args, uint32_t argCount,
 {
 //  printf ("ScriptablePluginObject default method called!\n");
 
-  STRINGZ_TO_NPVARIANT(_strdup("default method return val"), *result);
+  const NPUTF8 *ret_str = "default method return val";
+  NPUTF8 *s = (NPUTF8 *)NPN_MemAlloc(strlen(ret_str) + 1);
+  strcpy(s, ret_str);
+  STRINGZ_TO_NPVARIANT(s, *result);
 
   return true;
 }
@@ -537,7 +543,9 @@ CPlugin::CPlugin(NPP pNPInstance) :
     str.UTF8Characters = "document.getElementById('result').innerHTML += '<p>' + 'NPN_Evaluate() test, document = ' + this + '</p>';";
     str.UTF8Length = strlen(str.UTF8Characters);
 
-    NPN_Evaluate(m_pNPInstance, doc, &str, NULL);
+    NPVariant rval;
+    NPN_Evaluate(m_pNPInstance, doc, &str, &rval);
+    NPN_ReleaseVariantValue(&rval);
 
     NPN_ReleaseObject(doc);
   }
