@@ -52,10 +52,13 @@
 #include <string.h>
 #endif
 
+#include <string>
+
 #include "plugin.h"
 #include "npfunctions.h"
 
 static NPIdentifier sFoo_id;
+static NPIdentifier sDiskSize_id;
 static NPIdentifier sBar_id;
 static NPIdentifier sDocument_id;
 static NPIdentifier sBody_id;
@@ -367,7 +370,7 @@ DECLARE_NPOBJECT_CLASS_WITH_BASE(ScriptablePluginObject,
 bool
 ScriptablePluginObject::HasMethod(NPIdentifier name)
 {
-  return name == sFoo_id;
+  return (name == sFoo_id || name == sDiskSize_id);
 }
 
 bool
@@ -455,6 +458,25 @@ ScriptablePluginObject::Invoke(NPIdentifier name, const NPVariant *args,
     STRINGZ_TO_NPVARIANT(s, *result);
 
     return true;
+  }else if (name == sDiskSize_id){
+    // 簡単なエラーチェック
+    if (argCount != 1 || !NPVARIANT_IS_STRING(args[0])){
+      BOOLEAN_TO_NPVARIANT(false, *result);
+      return true;
+    }
+
+    NPString drive = NPVARIANT_TO_STRING(args[0]);
+
+    ULARGE_INTEGER free_size, total_size;
+    // 日本語などもサポートするなら MultiByteToWideChar などを使う。
+    std::string d(drive.UTF8Characters, drive.UTF8Length);
+    if (!GetDiskFreeSpaceEx(d.c_str(), &free_size, &total_size, NULL)){
+      BOOLEAN_TO_NPVARIANT(false, *result);
+      return true;
+    }
+
+    INT32_TO_NPVARIANT((int32_t)(total_size.QuadPart/(1024*1024)), *result);
+    return true;
   }
 
   return false;
@@ -489,6 +511,7 @@ CPlugin::CPlugin(NPP pNPInstance) :
   NPIdentifier n = NPN_GetStringIdentifier("foof");
 
   sFoo_id = NPN_GetStringIdentifier("foo");
+  sDiskSize_id = NPN_GetStringIdentifier("diskSize");
   sBar_id = NPN_GetStringIdentifier("bar");
   sDocument_id = NPN_GetStringIdentifier("document");
   sBody_id = NPN_GetStringIdentifier("body");
