@@ -181,7 +181,7 @@ ScriptablePluginObjectBase::SetProperty(NPIdentifier name,
                                         const NPVariant *value)
 {
   if (name == sBar_id) {
-    printf ("bar set\n");
+//    printf ("bar set\n");
 
     return true;
   }
@@ -326,7 +326,7 @@ bool
 ConstructablePluginObject::Construct(const NPVariant *args, uint32_t argCount,
                                      NPVariant *result)
 {
-  printf("Creating new ConstructablePluginObject!\n");
+//  printf("Creating new ConstructablePluginObject!\n");
 
   NPObject *myobj =
     NPN_CreateObject(mNpp, GET_NPOBJECT_CLASS(ConstructablePluginObject));
@@ -412,7 +412,7 @@ ScriptablePluginObject::Invoke(NPIdentifier name, const NPVariant *args,
                                uint32_t argCount, NPVariant *result)
 {
   if (name == sFoo_id) {
-    printf ("foo called!\n");
+//    printf ("foo called!\n");
 
     NPVariant docv;
     NPN_GetProperty(mNpp, sWindowObj, sDocument_id, &docv);
@@ -449,7 +449,7 @@ ScriptablePluginObject::Invoke(NPIdentifier name, const NPVariant *args,
 
     NPN_ReleaseVariantValue(&docv);
 
-    STRINGZ_TO_NPVARIANT(strdup("foo return val"), *result);
+    STRINGZ_TO_NPVARIANT(_strdup("foo return val"), *result);
 
     return true;
   }
@@ -461,9 +461,9 @@ bool
 ScriptablePluginObject::InvokeDefault(const NPVariant *args, uint32_t argCount,
                                       NPVariant *result)
 {
-  printf ("ScriptablePluginObject default method called!\n");
+//  printf ("ScriptablePluginObject default method called!\n");
 
-  STRINGZ_TO_NPVARIANT(strdup("default method return val"), *result);
+  STRINGZ_TO_NPVARIANT(_strdup("default method return val"), *result);
 
   return true;
 }
@@ -500,7 +500,7 @@ CPlugin::CPlugin(NPP pNPInstance) :
   NPN_GetProperty(m_pNPInstance, sWindowObj, n, &rval);
 
   if (NPVARIANT_IS_INT32(rval)) {
-    printf("rval = %d\n", NPVARIANT_TO_INT32(rval));
+//    printf("rval = %d\n", NPVARIANT_TO_INT32(rval));
   }
 
   n = NPN_GetStringIdentifier("document");
@@ -523,7 +523,7 @@ CPlugin::CPlugin(NPP pNPInstance) :
     NPN_GetProperty(m_pNPInstance, doc, n, &rval);
 
     if (NPVARIANT_IS_STRING(rval)) {
-      printf ("title = %s\n", NPVARIANT_TO_STRING(rval).UTF8Characters);
+//      printf ("title = %s\n", NPVARIANT_TO_STRING(rval).UTF8Characters);
 
       NPN_ReleaseVariantValue(&rval);
     }
@@ -552,9 +552,9 @@ CPlugin::CPlugin(NPP pNPInstance) :
                     &rval);
 
   if (NPVARIANT_IS_INT32(rval) && NPVARIANT_TO_INT32(rval) == 4) {
-    printf ("Default function call SUCCEEDED!\n");
+//    printf ("Default function call SUCCEEDED!\n");
   } else {
-    printf ("Default function call FAILED!\n");
+//    printf ("Default function call FAILED!\n");
   }
 
   NPN_ReleaseVariantValue(&barval);
@@ -572,7 +572,7 @@ CPlugin::CPlugin(NPP pNPInstance) :
   NPN_Invoke(sWindowObj, n, vars, 3, &rval);
 
   if (NPVARIANT_IS_STRING(rval)) {
-    printf ("prompt returned '%s'\n", NPVARIANT_TO_STRING(rval).UTF8Characters);
+//    printf ("prompt returned '%s'\n", NPVARIANT_TO_STRING(rval).UTF8Characters);
   }
 
   NPN_ReleaseVariantValue(&rval);
@@ -589,12 +589,12 @@ CPlugin::CPlugin(NPP pNPInstance) :
 
   NPN_GetProperty(m_pNPInstance, sWindowObj, n, &rval);
 
-  printf ("Object set/get test ");
+//  printf ("Object set/get test ");
 
   if (NPVARIANT_IS_OBJECT(rval) && NPVARIANT_TO_OBJECT(rval) == myobj) {
-    printf ("succeeded!\n");
+//    printf ("succeeded!\n");
   } else {
-    printf ("FAILED!\n");
+//    printf ("FAILED!\n");
   }
 
   NPN_ReleaseVariantValue(&rval);
